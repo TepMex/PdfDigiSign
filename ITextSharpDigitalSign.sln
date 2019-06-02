@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITextSharpDigitalSign", "ITextSharp5DigitalSign\ITextSharpDigitalSign.csproj", "{62B659F9-EE43-48F7-A535-2F7AB645CCBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfDigiSign", "PdfDigiSign\PdfDigiSign.csproj", "{A508C251-EC6F-4A75-908C-540E64F56BBE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{62B659F9-EE43-48F7-A535-2F7AB645CCBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62B659F9-EE43-48F7-A535-2F7AB645CCBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62B659F9-EE43-48F7-A535-2F7AB645CCBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62B659F9-EE43-48F7-A535-2F7AB645CCBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A508C251-EC6F-4A75-908C-540E64F56BBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A508C251-EC6F-4A75-908C-540E64F56BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A508C251-EC6F-4A75-908C-540E64F56BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A508C251-EC6F-4A75-908C-540E64F56BBE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4F0D2C6D-C055-4ADD-ADBC-A3CCDB90A909}
+	EndGlobalSection
+EndGlobal
