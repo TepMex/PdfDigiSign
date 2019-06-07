@@ -19,6 +19,18 @@ namespace PdfDigiSign
     public class PdfDigiSign
     {
 
+        /// <summary>
+        /// Adding named (empty) signature field to PDF document hard way (touch file descriptor, create and close stamper)
+        /// </summary>
+        /// <param name="fileName">PDF File</param>
+        /// <param name="fieldName">Name of field</param>
+        /// <param name="x">X coordinate on the page</param>
+        /// <param name="y">Y coordinate on the page</param>
+        /// <param name="width">Field width</param>
+        /// <param name="height">Field height</param>
+        /// <param name="page">The page to place field</param>
+        /// <param name="flags">PdfAnnotation flags</param>
+        /// <returns>Field added successfully or not</returns>
         public static bool AddSignatureField(string fileName, 
             string fieldName, 
             float x, 
@@ -57,6 +69,60 @@ namespace PdfDigiSign
             return result;
         }
 
+        /// <summary>
+        /// Adding named (empty) signature field to PDF document soft way (using existing stamper)
+        /// </summary>
+        /// <param name="stamper">Existing stamper</param>
+        /// <param name="fieldName">Name of field</param>
+        /// <param name="x">X coordinate on the page</param>
+        /// <param name="y">Y coordinate on the page</param>
+        /// <param name="width">Field width</param>
+        /// <param name="height">Field height</param>
+        /// <param name="page">The page to place field</param>
+        /// <param name="flags">PdfAnnotation flags</param>
+        /// <returns>Field added successfully or not</returns>
+        public static bool AddSignatureField(PdfStamper stamper, 
+            string fieldName,
+            float x,
+            float y,
+            float width,
+            float height,
+            int page = 1,
+            int flags = PdfAnnotation.FLAGS_PRINT)
+        {
+            bool result = false;
+            try
+            {
+                
+
+
+                PdfFormField field = CreateField(stamper.Writer, fieldName, new iTextSharp.text.Rectangle(x, y, width, height), page, flags);
+                stamper.AddAnnotation(field, page);
+
+                result = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                result = false;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Sign (fill) named field in the document hard way (touch file descriptor, create and close stamper)
+        /// </summary>
+        /// <param name="fileName">PDF file</param>
+        /// <param name="fieldName">Field to be signed</param>
+        /// <param name="reason">Sign reason</param>
+        /// <param name="location">Sign location</param>
+        /// <param name="graphics">Sign graphic</param>
+        /// <param name="certFile">PFX certificate</param>
+        /// <param name="certPassword">password of certificate</param>
+        /// <param name="renderingMode">SignatureRender renderingMode</param>
+        /// <param name="certificationLevel">PdfSignatureAppearance Certification Level</param>
+        /// <returns>Successfull or not</returns>
         public static bool SignField(string fileName, 
             string fieldName, 
             string reason, 
@@ -119,6 +185,80 @@ namespace PdfDigiSign
 
             }
             catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
+                result = false;
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// Sign (fill) named field in the document soft way (using existing stamper)
+        /// </summary>
+        /// <param name="stamper">PdfStamper</param>
+        /// <param name="fieldName">Field to be signed</param>
+        /// <param name="reason">Sign reason</param>
+        /// <param name="location">Sign location</param>
+        /// <param name="graphics">Sign graphic</param>
+        /// <param name="certFile">PFX certificate</param>
+        /// <param name="certPassword">password of certificate</param>
+        /// <param name="renderingMode">SignatureRender renderingMode</param>
+        /// <param name="certificationLevel">PdfSignatureAppearance Certification Level</param>
+        /// <returns>Successfull or not</returns>
+        public static bool SignField(PdfStamper stamper,
+            string fieldName,
+            string reason,
+            string location,
+            Bitmap graphics,
+            string certFile,
+            string certPassword,
+            PdfSignatureAppearance.SignatureRender renderingMode = PdfSignatureAppearance.SignatureRender.GraphicAndDescription,
+            int certificationLevel = PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED)
+        {
+            bool result = false;
+
+            try
+            {
+                
+                if (stamper.Reader.AcroFields.Fields.ContainsKey(fieldName))
+                {
+                    PdfSignatureAppearance psa = GetPSA(fieldName, stamper, graphics, reason, location, renderingMode, certificationLevel);
+
+                    Pkcs12Store store = new Pkcs12Store(new FileStream(certFile, FileMode.Open), certPassword.ToCharArray());
+                    string alias = "";
+                    ICollection<X509Certificate> chain = new List<X509Certificate>();
+
+                    foreach (string al in store.Aliases)
+                    {
+                        if (store.IsKeyEntry(al) && store.GetKey(al).Key.IsPrivate)
+                        {
+                            alias = al;
+                            break;
+                        }
+                    }
+                    AsymmetricKeyEntry ake = store.GetKey(alias);
+
+                    foreach (X509CertificateEntry c in store.GetCertificateChain(alias))
+                    {
+                        chain.Add(c.Certificate);
+                    }
+
+                    RsaPrivateCrtKeyParameters parameters = ake.Key as RsaPrivateCrtKeyParameters;
+
+                    psa.SetCrypto(parameters, chain.ToArray(), null, PdfSignatureAppearance.WINCER_SIGNED);
+
+                    result = true;
+
+                }
+                else
+                {
+                    result = false;
+                }
+
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e.Message);
                 result = false;
