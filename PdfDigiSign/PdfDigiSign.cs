@@ -81,7 +81,7 @@ namespace PdfDigiSign
         /// <param name="page">The page to place field</param>
         /// <param name="flags">PdfAnnotation flags</param>
         /// <returns>Field added successfully or not</returns>
-        public static bool AddSignatureField(PdfStamper stamper, 
+        public static bool AddSignatureField(ref PdfStamper stamper, 
             string fieldName,
             float x,
             float y,
@@ -94,8 +94,6 @@ namespace PdfDigiSign
             try
             {
                 
-
-
                 PdfFormField field = CreateField(stamper.Writer, fieldName, new iTextSharp.text.Rectangle(x, y, width, height), page, flags);
                 stamper.AddAnnotation(field, page);
 
@@ -207,7 +205,7 @@ namespace PdfDigiSign
         /// <param name="renderingMode">SignatureRender renderingMode</param>
         /// <param name="certificationLevel">PdfSignatureAppearance Certification Level</param>
         /// <returns>Successfull or not</returns>
-        public static bool SignField(PdfStamper stamper,
+        public static bool SignField(ref PdfStamper stamper,
             string fieldName,
             string reason,
             string location,
